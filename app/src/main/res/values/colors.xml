@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#243e7a</color>
+    <color name="colorPrimaryDark">#243e7a</color>
+    <color name="colorAccent">#000000</color>
+    <color name="secondaryColor">#e02f1d</color>
+    <!--    <color name="colorAccentPrev">#1ce148</color>-->
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorWhite2">#fcfffc</color>
+    <color name="colorText">#888888</color>
+
+    <color name="black_overlay">#66000000</color>
+    <color name="transaction_void_button_color">#E57373</color>
+    <color name="transaction_refund_button_color">#490528</color>
+
+    <!--New Colors-->
+
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="mtrl_textinput_default_box_stroke_color">#000</color>
+    <color name="control_color">#e02f1d</color>
+</resources>
