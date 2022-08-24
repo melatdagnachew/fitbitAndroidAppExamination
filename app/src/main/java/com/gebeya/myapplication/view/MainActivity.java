@@ -6,6 +6,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.gebeya.myapplication.R;
 import com.gebeya.myapplication.Sevices.EmployeService;
@@ -16,9 +17,9 @@ import com.gebeya.myapplication.core.Employee;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observer;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     Employee em= new Employee();
     EditText searchview;
     EmployeeAdapter adapter;
-    List<Employee> employees;
+    List<Employee> savedEmployees;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,13 +42,19 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-       EmployeService employeeService = App.getConnection().create(EmployeService.class);
-       employeeService.FetchEmployeeData();
+       EmployeeViewModel employeeViewModel = new ViewModelProvider.AndroidViewModelFactory(getApplication()).create(EmployeeViewModel.class);
+       employeeViewModel.loadEmployeeData();
+       employeeViewModel.getEmployee().observe(this, new Observer<List<Employee>>() {
+           @Override
+           public void onChanged(List<Employee> employees) {
+               savedEmployees =Employee.listAll(Employee.class);
+               adapter = new EmployeeAdapter(MainActivity.this, savedEmployees);
+               recyclerView.setAdapter(adapter);
 
-       employees =Employee.listAll(Employee.class);
-       System.out.println(employees.toString() + "Hello Hello");
-       adapter = new EmployeeAdapter(MainActivity.this, employees);
-       recyclerView.setAdapter(adapter);
+           }
+       });
+
+
 
         searchview.addTextChangedListener(new TextWatcher() {
             @Override
@@ -62,7 +69,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                filter(editable.toString());
+                if (!savedEmployees.isEmpty()) {
+                    filter(editable.toString());
+                }
             }
         });
 
@@ -72,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Employee> filteredlist = new ArrayList<>();
 
         // running a for loop to compare elements.
-        for (Employee item : employees) {
+        for (Employee item : savedEmployees) {
             // checking if the entered string matched with any item of our recycler view.
             if (item.getEmployeeName().toLowerCase().contains(text.toLowerCase())) {
                 // if the item is matched we are
@@ -84,34 +93,13 @@ public class MainActivity extends AppCompatActivity {
             // if no item is added in filtered list we are
             // displaying a toast message as no data found.
             Log.e("No Data Found..", " Toast.LENGTH_SHORT");
+            Toast.makeText(this,"Employees not found",Toast.LENGTH_LONG).show();
         } else {
             // at last we are passing that filtered
             // list to our adapter class.
             adapter.setfilter(filteredlist);
         }
     }
-////        em.enqueue(new Callback<EmployeeApi>() {
-////            @Override
-////            public void onResponse(@NonNull Call<EmployeeApi> call, @NonNull Response<EmployeeApi> response) {
-////
-////
-////                if (response.isSuccessful()) {
-////                    assert response.body() != null;
-////                        Log.e("test", "nowStatusIs: " + response.body().toString());
-////
-////                } else {
-////
-////                    Log.e("test", "Failed" + response.code());
-////                }
-////
-////            }
-////
-////            @Override
-////            public void onFailure(Call<EmployeeApi> call, Throwable t) {
-////                Log.e("test", "OnFailure" +" " + t.getMessage());
-////            }
-////
-////        });
 
 
 

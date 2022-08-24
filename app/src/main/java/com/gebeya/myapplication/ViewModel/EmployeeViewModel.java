@@ -12,6 +12,7 @@ import java.util.List;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -19,19 +20,19 @@ import retrofit2.Response;
 public class EmployeeViewModel extends ViewModel {
 
 
-    MutableLiveData<List<Employee>> EmployeeList;
+    MutableLiveData<List<Employee>> EmployeeList = new MutableLiveData<>();
     EmployeService employeeService = App.getConnection().create(EmployeService.class);
 
     public LiveData<List<Employee>> getEmployee() {
-        if (EmployeeList == null) {
-            EmployeeList = new MutableLiveData<List<Employee>>();
-           loadEmployeeData();
-        }
+//        if (EmployeeList == null) {
+//            EmployeeList = new MutableLiveData<List<Employee>>();
+//           loadEmployeeData();
+//        }
 
         return EmployeeList;
     }
 
-    public void loadEmployeeData(){
+    public void loadEmployeeData() {
 
         EmployeService employeeService = App.getConnection().create(EmployeService.class);
         final Call<EmployeeApi> em = employeeService.FetchEmployeeData();
@@ -46,14 +47,18 @@ public class EmployeeViewModel extends ViewModel {
                     EmployeeApi employeeApi = response.body();
                     assert employeeApi != null;
                     List<Employee> Employeelist = employeeApi.getData();
-                    EmployeeList.setValue(employeeApi.getData());
                     Log.e("test", "nowStatusIs: " + "Hello" + employeeApi.getData());
-                    for (Employee employee: Employeelist) {
-                        Employee e = new Employee(employee.getEmployeeName(),employee.getEmployeeSalary(),employee.getEmployeeAge());
+                    for (Employee employee : Employeelist) {
 
-                        e.save();
-                        Log.e("test", "nowStatusIs: "  + employeeApi.getData()+ "yess"+ employee);
+//                        Employee e = new Employee(employee.getEmployeeName(),employee.getEmployeeSalary(),employee.getEmployeeAge());
+                        List<Employee> result = Employee.find(Employee.class, "employee_name = ?", employee.getEmployeeName());
+                        if (result.isEmpty()) {
+                            employee.save();
+                        }
+
+                        Log.e("test", "nowStatusIs: " + employeeApi.getData() + "yess" + employee);
                     }
+                    EmployeeList.setValue(Employeelist);
 
                     Log.e("SAVED TO DATABASE", "SUCcesful");
                 } else {
